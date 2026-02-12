@@ -1,4 +1,4 @@
-# Internship Platform - Mobile App
+# First Step - Mobile App
 
 Мобильное приложение для поиска и публикации стажировок, разработанное на React Native с использованием Expo.
 
