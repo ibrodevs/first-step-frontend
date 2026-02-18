@@ -26,29 +26,60 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const scrollY = useRef(new Animated.Value(0)).current;
+  
+  // Переменные для отслеживания скролла
+  const headerHeight = 280;
 
   useEffect(() => {
-    Animated.parallel([
+    Animated.stagger(150, [
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 800,
+        duration: 1000,
         useNativeDriver: true,
-        easing: Easing.out(Easing.cubic),
+        easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
       }),
-      Animated.timing(slideAnim, {
+      Animated.spring(slideAnim, {
         toValue: 0,
-        duration: 600,
         useNativeDriver: true,
-        easing: Easing.out(Easing.back(1.2)),
+        tension: 120,
+        friction: 8,
+        mass: 1,
       }),
       Animated.spring(scaleAnim, {
         toValue: 1,
-        friction: 8,
-        tension: 40,
+        friction: 6,
+        tension: 80,
         useNativeDriver: true,
+        mass: 0.8,
       }),
     ]).start();
   }, []);
+
+  // Интерполяция для плавных анимаций header'а
+  const headerTranslateY = scrollY.interpolate({
+    inputRange: [0, 100, 200],
+    outputRange: [0, -50, -headerHeight],
+    extrapolate: 'clamp',
+  });
+
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 150, 250],
+    outputRange: [1, 0.7, 0],
+    extrapolate: 'clamp',
+  });
+
+  const headerScale = scrollY.interpolate({
+    inputRange: [0, 150],
+    outputRange: [1, 0.95],
+    extrapolate: 'clamp',
+  });
+
+  const contentOpacity = scrollY.interpolate({
+    inputRange: [0, 50, 150],
+    outputRange: [1, 1, 0.95],
+    extrapolate: 'clamp',
+  });
 
   const handleLogout = () => {
     Alert.alert(
@@ -78,6 +109,13 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
     const name = email.split('@')[0];
     return name.substring(0, 2).toUpperCase();
   };
+
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+    { 
+      useNativeDriver: false,
+    }
+  );
 
   const menuSections = [
     {
@@ -179,12 +217,24 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
       {/* Градиентный фон хедера */}
-      <LinearGradient
-        colors={[Colors.primary, Colors.accent]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.headerGradient}
+      <Animated.View
+        style={[
+          styles.headerWrapper,
+          {
+            transform: [
+              { translateY: headerTranslateY },
+              { scale: headerScale }
+            ],
+            opacity: headerOpacity,
+          }
+        ]}
       >
+        <LinearGradient
+          colors={[Colors.primary, Colors.accent]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.headerGradient}
+        >
         <View style={styles.headerTop}>
           <TouchableOpacity
             style={styles.headerButton}
@@ -254,78 +304,77 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
             </View>
           </View>
         </Animated.View>
-      </LinearGradient>
-
-      {/* Статистика */}
-      {user?.role === 'student' && (
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>12</Text>
-            <Text style={styles.statLabel}>Откликов</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>4</Text>
-            <Text style={styles.statLabel}>Приглашения</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>85%</Text>
-            <Text style={styles.statLabel}>Заполнено</Text>
-          </View>
-        </View>
-      )}
-
+        </LinearGradient>
+      </Animated.View>
+      
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        onScroll={handleScroll}
+        scrollEventThrottle={8}
+        decelerationRate="fast"
+        bounces={true}
+        bouncesZoom={false}
       >
         {/* Меню секции */}
-        {menuSections.map((section, sectionIndex) => (
-          <Animated.View
-            key={section.title}
-            style={[
-              styles.section,
-              {
-                opacity: fadeAnim,
-                transform: [{ translateY: slideAnim }]
-              }
-            ]}
-          >
-            <Text style={styles.sectionTitle}>{section.title}</Text>
+        <Animated.View style={{ opacity: contentOpacity }}>
+          {menuSections.map((section, sectionIndex) => {
+            const sectionDelay = sectionIndex * 100;
+            const sectionSlide = scrollY.interpolate({
+              inputRange: [0, 100 + sectionDelay],
+              outputRange: [20, 0],
+              extrapolate: 'clamp',
+            });
+            
+            return (
+              <Animated.View
+                key={section.title}
+                style={[
+                  styles.section,
+                  {
+                    opacity: fadeAnim,
+                    transform: [
+                      { translateY: sectionSlide }
+                    ]
+                  }
+                ]}
+              >
+                <Text style={styles.sectionTitle}>{section.title}</Text>
 
-            <View style={styles.menuContainer}>
-              {section.items.map((item, itemIndex) => (
-                <TouchableOpacity
-                  key={item.id}
-                  style={[
-                    styles.menuItem,
-                    itemIndex === section.items.length - 1 && styles.menuItemLast
-                  ]}
-                  onPress={item.onPress}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.menuItemLeft}>
-                    <View style={[styles.menuIconContainer, { backgroundColor: item.color + '15' }]}>
-                      <Feather name={item.icon} size={20} color={item.color} />
-                    </View>
-                    <Text style={styles.menuTitle}>{item.title}</Text>
-                  </View>
-
-                  <View style={styles.menuItemRight}>
-                    {item.badge && (
-                      <View style={[styles.badge, { backgroundColor: item.color }]}>
-                        <Text style={styles.badgeText}>{item.badge}</Text>
+                <View style={styles.menuContainer}>
+                  {section.items.map((item, itemIndex) => (
+                    <TouchableOpacity
+                      key={item.id}
+                      style={[
+                        styles.menuItem,
+                        itemIndex === section.items.length - 1 && styles.menuItemLast
+                      ]}
+                      onPress={item.onPress}
+                      activeOpacity={0.8}
+                    >
+                      <View style={styles.menuItemLeft}>
+                        <View style={[styles.menuIconContainer, { backgroundColor: item.color + '15' }]}>
+                          <Feather name={item.icon} size={20} color={item.color} />
+                        </View>
+                        <Text style={styles.menuTitle}>{item.title}</Text>
                       </View>
-                    )}
-                    <Feather name="chevron-right" size={20} color={Colors.gray} />
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </Animated.View>
-        ))}
+
+                      <View style={styles.menuItemRight}>
+                        {item.badge && (
+                          <View style={[styles.badge, { backgroundColor: item.color }]}>
+                            <Text style={styles.badgeText}>{item.badge}</Text>
+                          </View>
+                        )}
+                        <Feather name="chevron-right" size={20} color={Colors.gray} />
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </Animated.View>
+            );
+          })}
+        </Animated.View>
 
         {/* Кнопка выхода */}
         <Animated.View
@@ -369,6 +418,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  headerWrapper: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 10,
   },
   headerGradient: {
     paddingTop: StatusBar.currentHeight || 44,
@@ -514,6 +575,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    paddingTop: 280, // Высота header для корректного отступа
     paddingBottom: Theme.spacing.xl,
   },
   section: {
@@ -531,19 +593,19 @@ const styles = StyleSheet.create({
     borderRadius: Theme.borderRadius.large,
     marginHorizontal: Theme.spacing.lg,
     shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 15,
+    elevation: 5,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Theme.spacing.lg,
-    paddingVertical: Theme.spacing.md,
+    paddingVertical: Theme.spacing.md + 2,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.textMuted + '10',
+    borderBottomColor: Colors.textMuted + '08',
   },
   menuItemLast: {
     borderBottomWidth: 0,

@@ -157,44 +157,6 @@ export const WelcomeScreen: React.FC = ({ navigation }: any) => {
                         </View>
                     </View>
 
-                    <View style={styles.featuresContainer}>
-                        <View style={styles.featureItem}>
-                            <View style={styles.featureIconContainer}>
-                                <LinearGradient
-                                    colors={['#25D1E4', '#7BDFF2']}
-                                    style={styles.featureIcon}
-                                >
-                                    <Feather name="users" size={20} color="#FFFFFF" />
-                                </LinearGradient>
-                            </View>
-                            <Text style={styles.featureText}>1000+ вакансий</Text>
-                        </View>
-
-                        <View style={styles.featureItem}>
-                            <View style={styles.featureIconContainer}>
-                                <LinearGradient
-                                    colors={['#25D1E4', '#7BDFF2']}
-                                    style={styles.featureIcon}
-                                >
-                                    <Feather name="award" size={20} color="#FFFFFF" />
-                                </LinearGradient>
-                            </View>
-                            <Text style={styles.featureText}>500+ компаний</Text>
-                        </View>
-
-                        <View style={styles.featureItem}>
-                            <View style={styles.featureIconContainer}>
-                                <LinearGradient
-                                    colors={['#25D1E4', '#7BDFF2']}
-                                    style={styles.featureIcon}
-                                >
-                                    <Feather name="trending-up" size={20} color="#FFFFFF" />
-                                </LinearGradient>
-                            </View>
-                            <Text style={styles.featureText}>Быстрый старт</Text>
-                        </View>
-                    </View>
-
                     <View style={styles.buttonContainer}>
                         <Animated.View
                             style={[
