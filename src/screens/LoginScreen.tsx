@@ -27,7 +27,7 @@ export const LoginScreen: React.FC = ({ navigation }: any) => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
-  
+
   const { login, isLoading } = useAuthStore();
 
   // Анимации
@@ -86,7 +86,7 @@ export const LoginScreen: React.FC = ({ navigation }: any) => {
         'Ошибка входа',
         error.response?.data?.message || 'Неверный email или пароль',
         [
-          { 
+          {
             text: 'Попробовать снова',
             style: 'cancel'
           }
@@ -105,13 +105,13 @@ export const LoginScreen: React.FC = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         bounces={false}
       >
-        <Animated.View 
+        <Animated.View
           style={[
             styles.content,
             {
@@ -122,7 +122,15 @@ export const LoginScreen: React.FC = ({ navigation }: any) => {
         >
           {/* Декоративный элемент сверху */}
           <View style={styles.decorativeTop} />
-          
+
+          {/* Кнопка назад */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Feather name="arrow-left" size={24} color={Colors.primary} />
+          </TouchableOpacity>
+
           {/* Логотип/Заголовок */}
           <View style={styles.header}>
             <View style={styles.logoContainer}>
@@ -147,12 +155,12 @@ export const LoginScreen: React.FC = ({ navigation }: any) => {
                 styles.inputContainer,
                 emailFocused && styles.inputContainerFocused
               ]}>
-              <Feather 
-                name="mail" 
-                size={20} 
-                color={emailFocused ? Colors.accent : Colors.gray} 
-                style={styles.inputIcon}
-              />
+                <Feather
+                  name="mail"
+                  size={20}
+                  color={emailFocused ? Colors.accent : Colors.gray}
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   style={styles.input}
                   value={email}
@@ -178,10 +186,10 @@ export const LoginScreen: React.FC = ({ navigation }: any) => {
                 styles.inputContainer,
                 passwordFocused && styles.inputContainerFocused
               ]}>
-                <Feather 
-                  name="lock" 
-                  size={20} 
-                  color={passwordFocused ? Colors.accent : Colors.gray} 
+                <Feather
+                  name="lock"
+                  size={20}
+                  color={passwordFocused ? Colors.accent : Colors.gray}
                   style={styles.inputIcon}
                 />
                 <TextInput
@@ -200,9 +208,9 @@ export const LoginScreen: React.FC = ({ navigation }: any) => {
                   onPress={() => setShowPassword(!showPassword)}
                   style={styles.eyeIcon}
                 >
-                  <Feather 
-                    name={showPassword ? "eye-off" : "eye"} 
-                    size={20} 
+                  <Feather
+                    name={showPassword ? "eye-off" : "eye"}
+                    size={20}
                     color={Colors.gray}
                   />
                 </TouchableOpacity>
@@ -295,6 +303,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary + '10',
     borderRadius: 200,
     transform: [{ scaleX: 1.5 }],
+  },
+  backButton: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 10,
+    padding: Theme.spacing.sm,
   },
   header: {
     alignItems: 'center',

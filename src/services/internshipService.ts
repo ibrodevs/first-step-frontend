@@ -11,7 +11,7 @@ export const internshipService = {
       return await mockApi.getInternships(filters);
     } else {
       const params = new URLSearchParams();
-      
+
       if (filters?.city) params.append('city', filters.city);
       if (filters?.format) params.append('format', filters.format);
       if (filters?.isPaid !== undefined) params.append('is_paid', filters.isPaid.toString());
@@ -19,7 +19,7 @@ export const internshipService = {
       if (filters?.skills?.length) {
         filters.skills.forEach(skill => params.append('skills', skill));
       }
-      
+
       const response = await api.get(`/internships/?${params.toString()}`);
       return response.data;
     }
@@ -61,8 +61,12 @@ export const internshipService = {
   },
 
   async getMyApplications(): Promise<Application[]> {
-    const response = await api.get('/applications/');
-    return response.data.results || response.data;
+    if (USE_MOCK_API) {
+      return (await mockApi.getMyApplications()) as any;
+    } else {
+      const response = await api.get('/applications/');
+      return response.data.results || response.data;
+    }
   },
 
   async getInternshipApplications(internshipId: number): Promise<Application[]> {

@@ -9,27 +9,11 @@ import { useAuthStore } from '../store/authStore';
 import { Feather } from '@expo/vector-icons';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ApplicationsScreen } from '../screens/ApplicationsScreen';
+import { EditProfileScreen } from '../screens/EditProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-
-// Временные заглушки для экранов с улучшенным дизайном
-const ApplicationsScreen = () => (
-  <SafeAreaView style={styles.placeholderContainer}>
-    <View style={styles.placeholderContent}>
-      <View style={styles.placeholderIcon}>
-        <Feather name="file-text" size={48} color={Colors.accent} />
-      </View>
-      <Text style={styles.placeholderTitle}>Мои заявки</Text>
-      <Text style={styles.placeholderSubtitle}>
-        Здесь будут отображаться ваши заявки на стажировки
-      </Text>
-      <TouchableOpacity style={styles.placeholderButton}>
-        <Text style={styles.placeholderButtonText}>Скоро доступно</Text>
-      </TouchableOpacity>
-    </View>
-  </SafeAreaView>
-);
 
 const FavoritesScreen = () => (
   <SafeAreaView style={styles.placeholderContainer}>
@@ -65,70 +49,7 @@ const MyInternshipsScreen = () => (
   </SafeAreaView>
 );
 
-const HomeStack = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: Colors.background,
-          shadowColor: 'transparent',
-          elevation: 0,
-        },
-        headerTintColor: Colors.primary,
-        headerTitleStyle: {
-          fontWeight: 'bold',
-          fontSize: 18,
-        },
-        headerBackTitleVisible: false,
-      }}
-    >
-      <Stack.Screen
-        name="HomeList"
-        component={HomeScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="InternshipDetails"
-        component={InternshipDetailsScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-    </Stack.Navigator>
-  );
-};
-
-const ProfileStack = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: Colors.background,
-          shadowColor: 'transparent',
-          elevation: 0,
-        },
-        headerTintColor: Colors.primary,
-        headerTitleStyle: {
-          fontWeight: 'bold',
-          fontSize: 18,
-        },
-        headerBackTitleVisible: false,
-      }}
-    >
-      <Stack.Screen
-        name="ProfileMain"
-        component={ProfileScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-    </Stack.Navigator>
-  );
-};
-
-export const StudentTabNavigator: React.FC = () => {
+const StudentTabs: React.FC = () => {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -157,14 +78,14 @@ export const StudentTabNavigator: React.FC = () => {
     >
       <Tab.Screen
         name="Home"
-        component={HomeStack}
+        component={HomeScreen}
         options={{
           title: 'Главная',
           tabBarIcon: ({ focused, color, size }) => (
-            <Feather 
-              name={focused ? 'home' : 'home'} 
-              size={24} 
-              color={color} 
+            <Feather
+              name={focused ? 'home' : 'home'}
+              size={24}
+              color={color}
             />
           ),
         }}
@@ -175,10 +96,10 @@ export const StudentTabNavigator: React.FC = () => {
         options={{
           title: 'Заявки',
           tabBarIcon: ({ focused, color, size }) => (
-            <Feather 
-              name={focused ? 'file-text' : 'file'} 
-              size={24} 
-              color={color} 
+            <Feather
+              name={focused ? 'file-text' : 'file'}
+              size={24}
+              color={color}
             />
           ),
         }}
@@ -189,11 +110,11 @@ export const StudentTabNavigator: React.FC = () => {
         options={{
           title: 'Избранное',
           tabBarIcon: ({ focused, color, size }) => (
-            <Feather 
-              name={focused ? 'heart' : 'heart'} 
-              size={24} 
+            <Feather
+              name={focused ? 'heart' : 'heart'}
+              size={24}
               color={focused ? Colors.accent : color}
-              style={{ 
+              style={{
                 opacity: focused ? 1 : 0.7,
                 transform: [{ scale: focused ? 1.1 : 1 }]
               }}
@@ -203,14 +124,14 @@ export const StudentTabNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileStack}
+        component={ProfileScreen}
         options={{
           title: 'Профиль',
           tabBarIcon: ({ focused, color, size }) => (
-            <Feather 
-              name={focused ? 'user' : 'user'} 
-              size={24} 
-              color={color} 
+            <Feather
+              name={focused ? 'user' : 'user'}
+              size={24}
+              color={color}
             />
           ),
         }}
@@ -219,7 +140,21 @@ export const StudentTabNavigator: React.FC = () => {
   );
 };
 
-export const EmployerTabNavigator: React.FC = () => {
+export const StudentNavigator: React.FC = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="StudentTabs" component={StudentTabs} />
+      <Stack.Screen name="InternshipDetails" component={InternshipDetailsScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+    </Stack.Navigator>
+  );
+};
+
+const EmployerTabs: React.FC = () => {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -248,14 +183,14 @@ export const EmployerTabNavigator: React.FC = () => {
     >
       <Tab.Screen
         name="Home"
-        component={HomeStack}
+        component={HomeScreen}
         options={{
           title: 'Главная',
           tabBarIcon: ({ focused, color, size }) => (
-            <Feather 
-              name={focused ? 'home' : 'home'} 
-              size={24} 
-              color={color} 
+            <Feather
+              name={focused ? 'home' : 'home'}
+              size={24}
+              color={color}
             />
           ),
         }}
@@ -266,24 +201,24 @@ export const EmployerTabNavigator: React.FC = () => {
         options={{
           title: 'Стажировки',
           tabBarIcon: ({ focused, color, size }) => (
-            <Feather 
-              name={focused ? 'briefcase' : 'briefcase'} 
-              size={24} 
-              color={color} 
+            <Feather
+              name={focused ? 'briefcase' : 'briefcase'}
+              size={24}
+              color={color}
             />
           ),
         }}
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileStack}
+        component={ProfileScreen}
         options={{
           title: 'Профиль',
           tabBarIcon: ({ focused, color, size }) => (
-            <Feather 
-              name={focused ? 'user' : 'user'} 
-              size={24} 
-              color={color} 
+            <Feather
+              name={focused ? 'user' : 'user'}
+              size={24}
+              color={color}
             />
           ),
         }}
@@ -292,10 +227,24 @@ export const EmployerTabNavigator: React.FC = () => {
   );
 };
 
+export const EmployerNavigator: React.FC = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="EmployerTabs" component={EmployerTabs} />
+      <Stack.Screen name="InternshipDetails" component={InternshipDetailsScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+    </Stack.Navigator>
+  );
+};
+
 export const MainNavigator: React.FC = () => {
   const { user } = useAuthStore();
 
-  return user?.role === 'employer' ? <EmployerTabNavigator /> : <StudentTabNavigator />;
+  return user?.role === 'employer' ? <EmployerNavigator /> : <StudentNavigator />;
 };
 
 const styles = StyleSheet.create({

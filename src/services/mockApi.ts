@@ -103,12 +103,12 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 export const mockApi = {
   async login(email: string, password: string) {
     await delay(1000);
-    
+
     const userRecord = mockUsers[email];
     if (!userRecord || userRecord.password !== password) {
       throw new Error('Неверные учетные данные');
     }
-    
+
     return {
       user: userRecord.user,
       access: 'mock-access-token-' + Date.now(),
@@ -118,11 +118,11 @@ export const mockApi = {
 
   async register(email: string, password: string, role: 'student' | 'employer') {
     await delay(1500);
-    
+
     if (mockUsers[email]) {
       throw new Error('Пользователь с таким email уже существует');
     }
-    
+
     const newUser: User = {
       id: Date.now(),
       email,
@@ -130,9 +130,9 @@ export const mockApi = {
       isActive: true,
       dateJoined: new Date().toISOString(),
     };
-    
+
     mockUsers[email] = { user: newUser, password };
-    
+
     return {
       user: newUser,
       access: 'mock-access-token-' + Date.now(),
@@ -142,37 +142,37 @@ export const mockApi = {
 
   async getInternships(filters?: any) {
     await delay(800);
-    
+
     let filteredInternships = [...mockInternships];
-    
+
     if (filters?.search) {
       const search = filters.search.toLowerCase();
       filteredInternships = filteredInternships.filter(
-        internship => 
+        internship =>
           internship.title.toLowerCase().includes(search) ||
           internship.description.toLowerCase().includes(search) ||
           internship.employer.companyName.toLowerCase().includes(search)
       );
     }
-    
+
     if (filters?.city) {
       filteredInternships = filteredInternships.filter(
         internship => internship.city === filters.city
       );
     }
-    
+
     if (filters?.format) {
       filteredInternships = filteredInternships.filter(
         internship => internship.format === filters.format
       );
     }
-    
+
     if (filters?.isPaid !== undefined) {
       filteredInternships = filteredInternships.filter(
         internship => internship.isPaid === filters.isPaid
       );
     }
-    
+
     return {
       results: filteredInternships,
       count: filteredInternships.length,
@@ -181,12 +181,12 @@ export const mockApi = {
 
   async getInternshipById(id: number) {
     await delay(500);
-    
+
     const internship = mockInternships.find(i => i.id === id);
     if (!internship) {
       throw new Error('Стажировка не найдена');
     }
-    
+
     return internship;
   },
 
@@ -198,12 +198,12 @@ export const mockApi = {
 
   async applyToInternship(internshipId: number, coverLetter: string) {
     await delay(1000);
-    
+
     const internship = mockInternships.find(i => i.id === internshipId);
     if (!internship) {
       throw new Error('Стажировка не найдена');
     }
-    
+
     return {
       id: Date.now(),
       student: {} as StudentProfile,
@@ -218,5 +218,36 @@ export const mockApi = {
     await delay(500);
     // Для mock API просто возвращаем success
     return { success: true };
+  },
+
+  async getMyApplications() {
+    await delay(800);
+    // Mock applications
+    return [
+      {
+        id: 1,
+        student: {} as StudentProfile,
+        internship: mockInternships[0],
+        coverLetter: 'Я очень хочу у вас работать!',
+        status: 'sent',
+        dateApplied: new Date(Date.now() - 86400000).toISOString(),
+      },
+      {
+        id: 2,
+        student: {} as StudentProfile,
+        internship: mockInternships[1],
+        coverLetter: 'Имею опыт с Python.',
+        status: 'viewed',
+        dateApplied: new Date(Date.now() - 172800000).toISOString(),
+      },
+      {
+        id: 3,
+        student: {} as StudentProfile,
+        internship: mockInternships[2],
+        coverLetter: 'Мое портфолио...',
+        status: 'rejected',
+        dateApplied: new Date(Date.now() - 432000000).toISOString(),
+      }
+    ];
   },
 };

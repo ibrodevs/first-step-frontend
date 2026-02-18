@@ -103,55 +103,55 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
       title: user?.role === 'student' ? 'Моя карьера' : 'Управление',
       items: user?.role === 'student'
         ? [
-            {
-              id: 'applications',
-              title: 'Мои заявки',
-              icon: 'file-text',
-              color: Colors.success,
-              badge: '3',
-              onPress: () => navigation.navigate('Applications'),
-            },
-            {
-              id: 'favorites',
-              title: 'Избранное',
-              icon: 'heart',
-              color: Colors.error,
-              badge: '12',
-              onPress: () => navigation.navigate('Favorites'),
-            },
-            {
-              id: 'recommendations',
-              title: 'Рекомендации',
-              icon: 'star',
-              color: Colors.warning,
-              onPress: () => navigation.navigate('Recommendations'),
-            },
-          ]
+          {
+            id: 'applications',
+            title: 'Мои заявки',
+            icon: 'file-text',
+            color: Colors.success,
+            badge: '3',
+            onPress: () => navigation.navigate('Applications'),
+          },
+          {
+            id: 'favorites',
+            title: 'Избранное',
+            icon: 'heart',
+            color: Colors.error,
+            badge: '12',
+            onPress: () => navigation.navigate('Favorites'),
+          },
+          {
+            id: 'recommendations',
+            title: 'Рекомендации',
+            icon: 'star',
+            color: Colors.warning,
+            onPress: () => navigation.navigate('Recommendations'),
+          },
+        ]
         : [
-            {
-              id: 'my-internships',
-              title: 'Мои стажировки',
-              icon: 'briefcase',
-              color: Colors.success,
-              badge: '5',
-              onPress: () => navigation.navigate('MyInternships'),
-            },
-            {
-              id: 'applications',
-              title: 'Отклики',
-              icon: 'users',
-              color: Colors.accent,
-              badge: '12',
-              onPress: () => navigation.navigate('EmployerApplications'),
-            },
-            {
-              id: 'stats',
-              title: 'Статистика',
-              icon: 'bar-chart-2',
-              color: Colors.primary,
-              onPress: () => navigation.navigate('Stats'),
-            },
-          ],
+          {
+            id: 'my-internships',
+            title: 'Мои стажировки',
+            icon: 'briefcase',
+            color: Colors.success,
+            badge: '5',
+            onPress: () => navigation.navigate('MyInternships'),
+          },
+          {
+            id: 'applications',
+            title: 'Отклики',
+            icon: 'users',
+            color: Colors.accent,
+            badge: '12',
+            onPress: () => navigation.navigate('EmployerApplications'),
+          },
+          {
+            id: 'stats',
+            title: 'Статистика',
+            icon: 'bar-chart-2',
+            color: Colors.primary,
+            onPress: () => navigation.navigate('Stats'),
+          },
+        ],
     },
     {
       title: 'Поддержка',
@@ -177,7 +177,7 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      
+
       {/* Градиентный фон хедера */}
       <LinearGradient
         colors={[Colors.primary, Colors.accent]}
@@ -192,7 +192,7 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
           >
             <Feather name="arrow-left" size={24} color={Colors.white} />
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={styles.headerButton}
             onPress={() => navigation.navigate('Settings')}
@@ -201,7 +201,7 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
           </TouchableOpacity>
         </View>
 
-        <Animated.View 
+        <Animated.View
           style={[
             styles.profileInfo,
             {
@@ -226,25 +226,25 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
               <Feather name="camera" size={16} color={Colors.white} />
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.userInfo}>
             <Text style={styles.userName}>
               {user?.name || user?.email.split('@')[0]}
             </Text>
             <Text style={styles.userEmail}>{user?.email}</Text>
-            
+
             <View style={styles.badgeContainer}>
               <View style={styles.roleBadge}>
-                <Feather 
-                  name={user?.role === 'student' ? 'user' : 'briefcase'} 
-                  size={14} 
-                  color={Colors.white} 
+                <Feather
+                  name={user?.role === 'student' ? 'user' : 'briefcase'}
+                  size={14}
+                  color={Colors.white}
                 />
                 <Text style={styles.roleText}>
                   {user?.role === 'student' ? 'Соискатель' : 'Работодатель'}
                 </Text>
               </View>
-              
+
               {user?.role === 'student' && (
                 <View style={styles.verifiedBadge}>
                   <Feather name="check-circle" size={14} color={Colors.success} />
@@ -276,14 +276,14 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
         </View>
       )}
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         {/* Меню секции */}
         {menuSections.map((section, sectionIndex) => (
-          <Animated.View 
+          <Animated.View
             key={section.title}
             style={[
               styles.section,
@@ -294,7 +294,7 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
             ]}
           >
             <Text style={styles.sectionTitle}>{section.title}</Text>
-            
+
             <View style={styles.menuContainer}>
               {section.items.map((item, itemIndex) => (
                 <TouchableOpacity
@@ -312,7 +312,7 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
                     </View>
                     <Text style={styles.menuTitle}>{item.title}</Text>
                   </View>
-                  
+
                   <View style={styles.menuItemRight}>
                     {item.badge && (
                       <View style={[styles.badge, { backgroundColor: item.color }]}>
@@ -328,7 +328,7 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
         ))}
 
         {/* Кнопка выхода */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.logoutSection,
             {
@@ -503,12 +503,12 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 13,
-    color: Colors.gray,
+    color: Colors.textMuted,
   },
   statDivider: {
     width: 1,
     height: '100%',
-    backgroundColor: Colors.gray + '20',
+    backgroundColor: Colors.textMuted + '20',
   },
   scrollView: {
     flex: 1,
@@ -522,7 +522,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.gray,
+    color: Colors.textMuted,
     marginBottom: Theme.spacing.sm,
     marginLeft: Theme.spacing.lg,
   },
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Theme.spacing.lg,
     paddingVertical: Theme.spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.gray + '10',
+    borderBottomColor: Colors.textMuted + '10',
   },
   menuItemLast: {
     borderBottomWidth: 0,
@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
   },
   menuTitle: {
     fontSize: 16,
-    color: Colors.primary,
+    color: Colors.text,
     fontWeight: '500',
   },
   menuItemRight: {
@@ -605,7 +605,7 @@ const styles = StyleSheet.create({
   },
   version: {
     fontSize: 13,
-    color: Colors.gray,
+    color: Colors.textMuted,
     marginBottom: Theme.spacing.sm,
   },
   footerLinks: {
@@ -615,7 +615,7 @@ const styles = StyleSheet.create({
   },
   footerLink: {
     fontSize: 12,
-    color: Colors.gray,
+    color: Colors.textMuted,
     textDecorationLine: 'underline',
   },
   footerDot: {

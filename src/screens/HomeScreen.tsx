@@ -105,8 +105,8 @@ const InternshipCard: React.FC<InternshipCardProps> = ({ internship, onPress, in
           }
         ]}
       >
-        <TouchableOpacity 
-          style={styles.gridCard} 
+        <TouchableOpacity
+          style={styles.gridCard}
           onPress={onPress}
           activeOpacity={0.7}
           onPressIn={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
@@ -151,23 +151,23 @@ const InternshipCard: React.FC<InternshipCardProps> = ({ internship, onPress, in
             </View>
 
             <View style={styles.gridDeadline}>
-              <Feather 
-                name="clock" 
-                size={12} 
+              <Feather
+                name="clock"
+                size={12}
                 color={
                   deadlineStatus === 'urgent' ? Colors.error :
-                  deadlineStatus === 'soon' ? Colors.warning :
-                  Colors.gray
-                } 
+                    deadlineStatus === 'soon' ? Colors.warning :
+                      Colors.gray
+                }
               />
               <Text style={[
                 styles.gridDeadlineText,
                 deadlineStatus === 'urgent' && styles.urgentText,
                 deadlineStatus === 'soon' && styles.soonText,
               ]}>
-                {daysUntilDeadline < 0 ? 'Завершена' : 
-                 daysUntilDeadline === 0 ? 'Сегодня' :
-                 `${daysUntilDeadline} ${getDaysWord(daysUntilDeadline)}`}
+                {daysUntilDeadline < 0 ? 'Завершена' :
+                  daysUntilDeadline === 0 ? 'Сегодня' :
+                    `${daysUntilDeadline} ${getDaysWord(daysUntilDeadline)}`}
               </Text>
             </View>
 
@@ -197,8 +197,8 @@ const InternshipCard: React.FC<InternshipCardProps> = ({ internship, onPress, in
         }
       ]}
     >
-      <TouchableOpacity 
-        style={styles.card} 
+      <TouchableOpacity
+        style={styles.card}
         onPress={onPress}
         activeOpacity={0.7}
         onPressIn={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
@@ -209,7 +209,7 @@ const InternshipCard: React.FC<InternshipCardProps> = ({ internship, onPress, in
           end={{ x: 1, y: 0 }}
           style={styles.cardAccent}
         />
-        
+
         <View style={styles.cardHeader}>
           <View style={styles.titleContainer}>
             <Text style={styles.cardTitle} numberOfLines={2}>
@@ -220,7 +220,7 @@ const InternshipCard: React.FC<InternshipCardProps> = ({ internship, onPress, in
               <Text style={styles.companyName}>{internship.employer.companyName}</Text>
             </View>
           </View>
-          
+
           <View style={styles.badgeContainer}>
             <View style={[styles.badge, internship.isPaid ? styles.paidBadge : styles.unpaidBadge]}>
               <Text style={styles.badgeText}>
@@ -239,18 +239,18 @@ const InternshipCard: React.FC<InternshipCardProps> = ({ internship, onPress, in
             <Feather name="map-pin" size={16} color={Colors.accent} />
             <Text style={styles.infoText}>{internship.city}</Text>
           </View>
-          
+
           <View style={styles.infoItem}>
             <Text style={styles.infoIcon}>
-              {internship.format === 'online' ? '💻' : 
-               internship.format === 'offline' ? '🏢' : '🔄'}
+              {internship.format === 'online' ? '💻' :
+                internship.format === 'offline' ? '🏢' : '🔄'}
             </Text>
             <Text style={styles.infoText}>
               {internship.format === 'online' ? 'Удаленно' :
-               internship.format === 'offline' ? 'В офисе' : 'Гибрид'}
+                internship.format === 'offline' ? 'В офисе' : 'Гибрид'}
             </Text>
           </View>
-          
+
           <View style={styles.infoItem}>
             <Feather name="clock" size={16} color={Colors.accent} />
             <Text style={styles.infoText}>{internship.duration}</Text>
@@ -275,14 +275,14 @@ const InternshipCard: React.FC<InternshipCardProps> = ({ internship, onPress, in
 
         <View style={styles.cardFooter}>
           <View style={styles.deadlineContainer}>
-            <Feather 
-              name="calendar" 
-              size={14} 
+            <Feather
+              name="calendar"
+              size={14}
               color={
                 deadlineStatus === 'urgent' ? Colors.error :
-                deadlineStatus === 'soon' ? Colors.warning :
-                Colors.gray
-              } 
+                  deadlineStatus === 'soon' ? Colors.warning :
+                    Colors.gray
+              }
             />
             <Text style={[
               styles.deadlineText,
@@ -290,11 +290,11 @@ const InternshipCard: React.FC<InternshipCardProps> = ({ internship, onPress, in
               deadlineStatus === 'soon' && styles.soonText,
             ]}>
               {daysUntilDeadline < 0 ? 'Дедлайн истек' :
-               daysUntilDeadline === 0 ? 'Дедлайн сегодня' :
-               `${daysUntilDeadline} ${getDaysWord(daysUntilDeadline)}`}
+                daysUntilDeadline === 0 ? 'Дедлайн сегодня' :
+                  `${daysUntilDeadline} ${getDaysWord(daysUntilDeadline)}`}
             </Text>
           </View>
-          
+
           <View style={styles.applyButton}>
             <Text style={styles.applyButtonText}>Подробнее</Text>
             <Feather name="arrow-right" size={16} color={Colors.accent} />
@@ -318,10 +318,10 @@ const FilterChip: React.FC<{
     activeOpacity={0.7}
   >
     {icon && (
-      <Feather 
-        name={icon} 
-        size={16} 
-        color={active ? Colors.white : Colors.gray} 
+      <Feather
+        name={icon}
+        size={16}
+        color={active ? Colors.white : Colors.gray}
         style={styles.filterChipIcon}
       />
     )}
@@ -352,9 +352,9 @@ const SortModal: React.FC<{
       animationType="slide"
       onRequestClose={onClose}
     >
-      <TouchableOpacity 
-        style={styles.modalOverlay} 
-        activeOpacity={1} 
+      <TouchableOpacity
+        style={styles.modalOverlay}
+        activeOpacity={1}
         onPress={onClose}
       >
         <View style={styles.modalContent}>
@@ -369,7 +369,7 @@ const SortModal: React.FC<{
               <Feather name="x" size={24} color={Colors.white} />
             </TouchableOpacity>
           </LinearGradient>
-          
+
           <View style={styles.modalBody}>
             {sortOptions.map((option) => (
               <TouchableOpacity
@@ -382,10 +382,10 @@ const SortModal: React.FC<{
                 }}
               >
                 <View style={styles.sortOptionLeft}>
-                  <Feather 
-                    name={option.icon} 
-                    size={20} 
-                    color={selectedSort === option.value ? Colors.accent : Colors.gray} 
+                  <Feather
+                    name={option.icon}
+                    size={20}
+                    color={selectedSort === option.value ? Colors.accent : Colors.gray}
                   />
                   <Text style={[
                     styles.sortOptionText,
@@ -414,9 +414,9 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
     applyFilters,
     filters,
   } = useInternshipStore();
-  
+
   const { user } = useAuthStore();
-  
+
   // Состояния
   const [filterState, setFilterState] = useState<FilterState>({
     search: '',
@@ -426,20 +426,20 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
     sortBy: 'date',
     viewMode: 'list',
   });
-  
+
   const [activePreset, setActivePreset] = useState<FilterPreset>('all');
   const [refreshing, setRefreshing] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
   const [showCityFilter, setShowCityFilter] = useState(false);
   const [cities, setCities] = useState<string[]>([]);
-  
+
   const scrollY = useRef(new Animated.Value(0)).current;
   const headerHeight = useRef(new Animated.Value(1)).current;
 
   // Мемоизированные данные
   const filteredInternships = useMemo(() => {
     let filtered = [...internships];
-    
+
     // Применяем сортировку
     switch (filterState.sortBy) {
       case 'date':
@@ -452,7 +452,7 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
         filtered.sort((a, b) => (b.salary || 0) - (a.salary || 0));
         break;
     }
-    
+
     return filtered;
   }, [internships, filterState.sortBy]);
 
@@ -480,9 +480,9 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
 
   const handlePresetPress = (preset: FilterPreset) => {
     setActivePreset(preset);
-    
+
     let newFilters = { ...filters };
-    
+
     switch (preset) {
       case 'paid':
         newFilters.isPaid = true;
@@ -504,21 +504,21 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
         newFilters.search = '';
         setFilterState(prev => ({ ...prev, search: '' }));
     }
-    
+
     applyFilters(newFilters);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const toggleViewMode = () => {
-    setFilterState(prev => ({ 
-      ...prev, 
-      viewMode: prev.viewMode === 'list' ? 'grid' : 'list' 
+    setFilterState(prev => ({
+      ...prev,
+      viewMode: prev.viewMode === 'list' ? 'grid' : 'list'
     }));
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const renderHeader = () => (
-    <Animated.View 
+    <Animated.View
       style={[
         styles.header,
         {
@@ -538,34 +538,34 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
       ]}
     >
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      
+
       {/* Верхняя панель */}
       <View style={styles.topBar}>
         <View>
           <Text style={styles.greetingText}>Добро пожаловать,</Text>
           <Text style={styles.userName}>{user?.name || user?.email.split('@')[0]}</Text>
         </View>
-        
+
         <View style={styles.topBarActions}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.iconButton}
             onPress={toggleViewMode}
           >
-            <Feather 
-              name={filterState.viewMode === 'grid' ? 'grid' : 'list'} 
-              size={22} 
-              color={Colors.primary} 
+            <Feather
+              name={filterState.viewMode === 'grid' ? 'grid' : 'list'}
+              size={22}
+              color={Colors.primary}
             />
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.iconButton}
             onPress={() => setShowSortModal(true)}
           >
             <Feather name="sliders" size={22} color={Colors.primary} />
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.profileButton}
             onPress={() => navigation.navigate('Profile')}
           >
@@ -598,7 +598,7 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
             selectionColor={Colors.accent}
           />
           {filterState.search.length > 0 && (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
                 setFilterState(prev => ({ ...prev, search: '' }));
                 applyFilters({ ...filters, search: '' });
@@ -612,8 +612,8 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
 
       {/* Быстрые фильтры */}
       <View style={styles.quickFiltersSection}>
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.quickFiltersContainer}
         >
@@ -653,8 +653,8 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
       {/* Город фильтр */}
       {cities.length > 0 && (
         <View style={styles.citySection}>
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.cityContainer}
           >
@@ -666,7 +666,7 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
                 Все города
               </Text>
             </TouchableOpacity>
-            
+
             {cities.slice(0, 5).map((city) => (
               <TouchableOpacity
                 key={city}
@@ -678,9 +678,9 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
                 </Text>
               </TouchableOpacity>
             ))}
-            
+
             {cities.length > 5 && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.moreCitiesChip}
                 onPress={() => setShowCityFilter(true)}
               >
@@ -721,12 +721,12 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
           style={styles.resetButton}
           onPress={() => {
             setActivePreset('all');
-            setFilterState(prev => ({ 
-              ...prev, 
-              search: '', 
+            setFilterState(prev => ({
+              ...prev,
+              search: '',
               city: null,
               format: null,
-              isPaid: null 
+              isPaid: null
             }));
             applyFilters({});
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -850,7 +850,7 @@ const styles = StyleSheet.create({
   loadingSubText: {
     marginTop: Theme.spacing.sm,
     fontSize: 15,
-    color: Colors.gray,
+    color: Colors.textMuted,
   },
   listContent: {
     paddingBottom: Theme.spacing.xl,
@@ -869,12 +869,12 @@ const styles = StyleSheet.create({
   },
   greetingText: {
     fontSize: 14,
-    color: Colors.gray,
+    color: Colors.textMuted,
   },
   userName: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: Colors.primary,
+    color: Colors.text,
     marginTop: 2,
   },
   topBarActions: {
@@ -937,7 +937,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: Colors.primary,
+    color: Colors.text,
     marginLeft: Theme.spacing.sm,
     marginRight: Theme.spacing.sm,
   },
@@ -972,7 +972,7 @@ const styles = StyleSheet.create({
   },
   filterChipText: {
     fontSize: 14,
-    color: Colors.primary,
+    color: Colors.textMuted,
     fontWeight: '500',
   },
   filterChipTextActive: {
@@ -999,7 +999,7 @@ const styles = StyleSheet.create({
   },
   cityChipText: {
     fontSize: 13,
-    color: Colors.primary,
+    color: Colors.textMuted,
   },
   cityChipTextActive: {
     color: Colors.white,
@@ -1028,13 +1028,13 @@ const styles = StyleSheet.create({
   statsNumber: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.accent,
+    color: Colors.primary,
   },
   statsUpdate: {
     fontSize: 12,
     color: Colors.gray + '80',
   },
-  
+
   // List View Styles
   cardWrapper: {
     marginHorizontal: Theme.spacing.lg,
@@ -1074,7 +1074,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.primary,
+    color: Colors.text,
     marginBottom: 4,
     lineHeight: 24,
   },
@@ -1085,7 +1085,7 @@ const styles = StyleSheet.create({
   },
   companyName: {
     fontSize: 14,
-    color: Colors.accent,
+    color: Colors.primaryDark,
     fontWeight: '600',
   },
   badgeContainer: {
@@ -1106,11 +1106,11 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.primary,
+    color: Colors.text,
   },
   cardDescription: {
     fontSize: 14,
-    color: Colors.gray,
+    color: Colors.textMuted,
     marginBottom: Theme.spacing.md,
     lineHeight: 20,
   },
@@ -1133,7 +1133,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 13,
-    color: Colors.primary,
+    color: Colors.text,
     fontWeight: '500',
   },
   skillsSection: {
@@ -1158,7 +1158,7 @@ const styles = StyleSheet.create({
   },
   skillText: {
     fontSize: 12,
-    color: Colors.primary,
+    color: Colors.text,
     fontWeight: '500',
   },
   moreSkillsTag: {
@@ -1171,7 +1171,7 @@ const styles = StyleSheet.create({
   },
   moreSkillsText: {
     fontSize: 12,
-    color: Colors.gray,
+    color: Colors.textMuted,
     fontWeight: '600',
   },
   cardFooter: {
@@ -1309,7 +1309,7 @@ const styles = StyleSheet.create({
   },
   gridSkillText: {
     fontSize: 10,
-    color: Colors.primary,
+    color: Colors.text,
     fontWeight: '500',
   },
   gridMoreSkills: {
@@ -1351,13 +1351,13 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: Colors.primary,
+    color: Colors.text,
     marginBottom: Theme.spacing.sm,
     textAlign: 'center',
   },
   emptySubText: {
     fontSize: 16,
-    color: Colors.gray,
+    color: Colors.textMuted,
     textAlign: 'center',
     marginBottom: Theme.spacing.xl,
     lineHeight: 24,
@@ -1400,7 +1400,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.white,
+    color: Colors.text,
   },
   modalBody: {
     padding: Theme.spacing.lg,
@@ -1420,7 +1420,7 @@ const styles = StyleSheet.create({
   },
   sortOptionText: {
     fontSize: 16,
-    color: Colors.primary,
+    color: Colors.text,
   },
   sortOptionTextActive: {
     color: Colors.accent,

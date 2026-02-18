@@ -3,6 +3,7 @@ export interface User {
   email: string;
   role: 'student' | 'employer';
   isActive: boolean;
+  name?: string;
   dateJoined: string;
 }
 
@@ -39,8 +40,11 @@ export interface Internship {
   city: string;
   duration: string;
   isPaid: boolean;
+  salary?: number;
   status: 'active' | 'closed';
   dateCreated: string;
+  createdAt: string; // Used in some screens
+  deadline: string;  // Required for date calculations in screens
   employer: EmployerProfile;
   applicationsCount?: number;
 }
@@ -76,4 +80,5 @@ export interface InternshipFilters {
   isPaid?: boolean;
   skills?: string[];
   search?: string;
+  sortBy?: 'date' | 'deadline' | 'salary';
 }

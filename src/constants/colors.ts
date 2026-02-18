@@ -1,25 +1,31 @@
 export const Colors = {
-  primary: '#05386B',      // Тёмно-синий
-  secondary: '#379683',    // Сине-зелёный
-  accent: '#5CDB95',       // Мятный
-  lightAccent: '#8EE4AF',  // Светло-зелёный
-  background: '#EDF5E1',   // Светлый фон
-  white: '#FFFFFF',
+  primary: '#25D1E4',      // Bright Cyan
+  primaryDark: '#1DA8B8',  // Darker Cyan
+  secondary: '#25D1E4',    // Cyan
+  accent: '#25D1E4',       // Cyan
+  lightAccent: '#E0F7FA',  // Light Cyan
+  background: '#ffffff',   // White background
+  surface: '#ffffff',      // White surface
+  white: '#ffffff',
   black: '#000000',
+  text: '#17252A',         // Keeping the dark text for readability
+  textMuted: '#666666',    // Standard gray for muted text
   gray: '#666666',
   lightGray: '#F5F5F5',
-  danger: '#FF6B6B',
+  danger: '#FF5252',
   warning: '#FFA726',
-  success: '#4CAF50',
-  info: '#5856D6',
-  error: '#FF3B30',
-  
-  // Статусы
+  success: '#25D1E4',
+  info: '#25D1E4',
+  error: '#FF5252',
+
+  // Statuses
   status: {
-    active: '#5CDB95',
-    accepted: '#379683',
-    rejected: '#05386B',
-    closed: '#8EE4AF',
+    active: '#25D1E4',
+    accepted: '#25D1E4',
+    rejected: '#FF5252',
+    closed: '#666666',
+    viewed: '#FFA726',
+    sent: '#25D1E4',
   }
 };
 
@@ -41,8 +47,8 @@ export const Theme = {
     large: 24,
   },
   borderRadius: {
-    small: 4,
-    medium: 8,
-    large: 16,
+    small: 8,
+    medium: 16,
+    large: 20,
   },
 };

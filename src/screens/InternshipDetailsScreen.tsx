@@ -97,19 +97,19 @@ const ApplyModal: React.FC<{
       animationType="none"
       onRequestClose={onClose}
     >
-      <Animated.View 
+      <Animated.View
         style={[
           styles.modalOverlay,
           { opacity: fadeAnim }
         ]}
       >
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.modalDismiss}
-          activeOpacity={1} 
+          activeOpacity={1}
           onPress={onClose}
         />
-        
-        <Animated.View 
+
+        <Animated.View
           style={[
             styles.modalContent,
             { transform: [{ translateY: slideAnim }] }
@@ -134,7 +134,7 @@ const ApplyModal: React.FC<{
             <Text style={styles.modalSubtitle}>
               Сопроводительное письмо
             </Text>
-            
+
             <View style={styles.textAreaContainer}>
               <TextInput
                 style={styles.textArea}
@@ -148,7 +148,7 @@ const ApplyModal: React.FC<{
                 selectionColor={Colors.accent}
                 maxLength={1000}
               />
-              
+
               <View style={styles.characterCounter}>
                 <Text style={[
                   styles.characterCount,
@@ -181,13 +181,13 @@ const ApplyModal: React.FC<{
           </View>
 
           <View style={styles.modalFooter}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.modalCancelButton}
               onPress={onClose}
             >
               <Text style={styles.modalCancelText}>Отмена</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[
                 styles.modalSubmitButton,
@@ -238,8 +238,8 @@ const ExpandableSection: React.FC<{
 
   return (
     <View style={styles.section}>
-      <TouchableOpacity 
-        style={styles.sectionHeader} 
+      <TouchableOpacity
+        style={styles.sectionHeader}
         onPress={toggleExpand}
         activeOpacity={0.7}
       >
@@ -253,7 +253,7 @@ const ExpandableSection: React.FC<{
           <Feather name="chevron-down" size={20} color={Colors.gray} />
         </Animated.View>
       </TouchableOpacity>
-      
+
       {expanded && (
         <Animated.View style={styles.sectionContent}>
           {children}
@@ -272,7 +272,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
   const [applyModalVisible, setApplyModalVisible] = useState(false);
   const [applying, setApplying] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'requirements' | 'company'>('overview');
-  
+
   // Анимации
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -282,7 +282,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
 
   useEffect(() => {
     fetchInternshipById(internshipId);
-    
+
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -345,18 +345,18 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
   const handleApply = useCallback(async (coverLetter: string) => {
     setApplying(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
+
     try {
       await applyToInternship(internshipId, coverLetter);
       setApplyModalVisible(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      
+
       Alert.alert(
         '✓ Заявка отправлена!',
         'Работодатель рассмотрит вашу кандидацию в ближайшее время. Вы получите уведомление о решении.',
         [
-          { 
-            text: 'Отлично', 
+          {
+            text: 'Отлично',
             onPress: () => navigation.goBack()
           }
         ]
@@ -390,17 +390,17 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
 
   const status = formatStatus[currentInternship.status] || formatStatus.active;
   const isExpired = new Date(currentInternship.deadline) < new Date();
-  const canApply = user?.role === 'student' && 
-                   currentInternship.status === 'active' && 
-                   !isExpired;
+  const canApply = user?.role === 'student' &&
+    currentInternship.status === 'active' &&
+    !isExpired;
 
   return (
     <>
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-        
+
         {/* Анимированный хедер */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.header,
             {
@@ -422,14 +422,14 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
               >
                 <Feather name="arrow-left" size={24} color={Colors.white} />
               </TouchableOpacity>
-              
+
               <View style={styles.headerTitleContainer}>
                 <Text style={styles.headerTitle} numberOfLines={1}>
                   {currentInternship.title}
                 </Text>
               </View>
-              
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 style={styles.headerButton}
                 onPress={handleShare}
               >
@@ -451,7 +451,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
           scrollEventThrottle={16}
         >
           {/* Hero секция */}
-          <Animated.View 
+          <Animated.View
             style={[
               styles.heroSection,
               {
@@ -473,21 +473,21 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
                       <Feather name={status.icon} size={14} color={Colors.white} />
                       <Text style={styles.heroBadgeText}>{status.text}</Text>
                     </View>
-                    
+
                     <View style={[styles.heroBadge, { backgroundColor: Colors.white + '20' }]}>
                       <Text style={styles.heroBadgeText}>
                         ID: {currentInternship.id}
                       </Text>
                     </View>
                   </View>
-                  
+
                   <TouchableOpacity style={styles.favoriteButton}>
                     <Feather name="heart" size={24} color={Colors.white} />
                   </TouchableOpacity>
                 </View>
 
                 <Text style={styles.heroTitle}>{currentInternship.title}</Text>
-                
+
                 <View style={styles.heroCompany}>
                   <View style={styles.heroCompanyLogo}>
                     <Text style={styles.heroCompanyInitial}>
@@ -514,20 +514,20 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
 
           {/* Статистика */}
           <View style={styles.statsGrid}>
-            <StatBadge 
-              icon="users" 
-              value="24" 
-              label="Откликов" 
+            <StatBadge
+              icon="users"
+              value="24"
+              label="Откликов"
             />
-            <StatBadge 
-              icon="eye" 
-              value="156" 
-              label="Просмотров" 
+            <StatBadge
+              icon="eye"
+              value="156"
+              label="Просмотров"
             />
-            <StatBadge 
-              icon="clock" 
-              value={daysUntilDeadline ? `${daysUntilDeadline} дн.` : '—'} 
-              label="Дедлайн" 
+            <StatBadge
+              icon="clock"
+              value={daysUntilDeadline ? `${daysUntilDeadline} дн.` : '—'}
+              label="Дедлайн"
             />
           </View>
 
@@ -542,7 +542,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
                 <Text style={styles.infoCardValue}>{currentInternship.city}</Text>
               </View>
             </View>
-            
+
             <View style={styles.infoCard}>
               <View style={[styles.infoCardIcon, { backgroundColor: Colors.accent + '15' }]}>
                 <Text style={styles.infoCardEmoji}>{formatIcon[currentInternship.format]}</Text>
@@ -552,7 +552,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
                 <Text style={styles.infoCardValue}>{formatLabel[currentInternship.format]}</Text>
               </View>
             </View>
-            
+
             <View style={styles.infoCard}>
               <View style={[styles.infoCardIcon, { backgroundColor: Colors.accent + '15' }]}>
                 <Feather name="clock" size={20} color={Colors.accent} />
@@ -595,7 +595,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
                 Обзор
               </Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[styles.tab, activeTab === 'requirements' && styles.tabActive]}
               onPress={() => setActiveTab('requirements')}
@@ -604,7 +604,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
                 Требования
               </Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[styles.tab, activeTab === 'company' && styles.tabActive]}
               onPress={() => setActiveTab('company')}
@@ -646,17 +646,17 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
                     </Text>
                   )}
                 </View>
-                
+
                 <View style={styles.conditionItem}>
                   <Feather name="calendar" size={18} color={Colors.accent} />
                   <Text style={styles.conditionLabel}>Начало</Text>
                   <Text style={styles.conditionValue}>
-                    {currentInternship.startDate 
+                    {currentInternship.startDate
                       ? new Date(currentInternship.startDate).toLocaleDateString('ru-RU', { month: 'short', day: 'numeric' })
                       : 'Гибкое'}
                   </Text>
                 </View>
-                
+
                 <View style={styles.conditionItem}>
                   <Feather name="users" size={18} color={Colors.accent} />
                   <Text style={styles.conditionLabel}>Набор</Text>
@@ -720,7 +720,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
               {/* Контакты */}
               <View style={styles.contactsCard}>
                 <Text style={styles.contactsTitle}>Контакты</Text>
-                
+
                 {currentInternship.employer.website && (
                   <TouchableOpacity style={styles.contactRow}>
                     <View style={styles.contactIcon}>
@@ -729,7 +729,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
                     <Text style={styles.contactText}>{currentInternship.employer.website}</Text>
                   </TouchableOpacity>
                 )}
-                
+
                 {currentInternship.employer.email && (
                   <TouchableOpacity style={styles.contactRow}>
                     <View style={styles.contactIcon}>
@@ -738,7 +738,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
                     <Text style={styles.contactText}>{currentInternship.employer.email}</Text>
                   </TouchableOpacity>
                 )}
-                
+
                 {currentInternship.employer.phone && (
                   <TouchableOpacity style={styles.contactRow}>
                     <View style={styles.contactIcon}>
@@ -773,8 +773,8 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
           {/* Метки/теги */}
           {currentInternship.tags && currentInternship.tags.length > 0 && (
             <View style={styles.tagsWrapper}>
-              <ScrollView 
-                horizontal 
+              <ScrollView
+                horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.tagsContainer}
               >
@@ -808,8 +808,8 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
           {/* Похожие стажировки */}
           <View style={styles.similarSection}>
             <Text style={styles.similarTitle}>Похожие стажировки</Text>
-            <ScrollView 
-              horizontal 
+            <ScrollView
+              horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.similarContainer}
             >
@@ -831,7 +831,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
 
         {/* Футер с кнопкой */}
         {canApply && (
-          <Animated.View 
+          <Animated.View
             style={[
               styles.footer,
               { transform: [{ scale: buttonScaleAnim }] }
@@ -862,7 +862,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
                 </View>
               </TouchableOpacity>
             </LinearGradient>
-            
+
             <Text style={styles.footerHint}>
               ⚡ 92% работодателей отвечают в течение 3 дней
             </Text>
@@ -872,7 +872,7 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
         {/* Футер для работодателя */}
         {user?.role === 'employer' && user.id === currentInternship.employerId && (
           <View style={styles.employerFooter}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.employerStatButton}
               onPress={() => navigation.navigate('Applications', { internshipId })}
             >
@@ -884,13 +884,13 @@ export const InternshipDetailsScreen: React.FC<Props> = ({ route, navigation }) 
                 <Text style={styles.employerStatLabel}>Откликов</Text>
               </View>
             </TouchableOpacity>
-            
+
             <View style={styles.employerActions}>
               <TouchableOpacity style={styles.employerEditButton}>
                 <Feather name="edit-2" size={18} color={Colors.white} />
                 <Text style={styles.employerEditText}>Редактировать</Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity style={styles.employerMoreButton}>
                 <Feather name="more-vertical" size={20} color={Colors.primary} />
               </TouchableOpacity>
@@ -1510,12 +1510,12 @@ const styles = StyleSheet.create({
   similarCardTitle: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: Colors.primary,
+    color: Colors.text,
     marginBottom: 4,
   },
   similarCardCompany: {
     fontSize: 12,
-    color: Colors.accent,
+    color: Colors.textMuted,
   },
   similarCardFooter: {
     flexDirection: 'row',
@@ -1524,7 +1524,7 @@ const styles = StyleSheet.create({
   },
   similarCardCity: {
     fontSize: 11,
-    color: Colors.gray,
+    color: Colors.textMuted,
   },
   similarCardSalary: {
     fontSize: 12,
@@ -1540,7 +1540,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Theme.spacing.lg,
     paddingVertical: Theme.spacing.md,
     borderTopWidth: 1,
-    borderTopColor: Colors.gray + '10',
+    borderTopColor: Colors.textMuted + '10',
     shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.05,
@@ -1567,13 +1567,13 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   applyButtonSubtitle: {
-    color: Colors.white + 'CC',
+    color: Colors.surface + 'CC',
     fontSize: 12,
   },
   footerHint: {
     textAlign: 'center',
     fontSize: 11,
-    color: Colors.gray,
+    color: Colors.textMuted,
     marginTop: Theme.spacing.sm,
   },
   employerFooter: {
@@ -1587,7 +1587,7 @@ const styles = StyleSheet.create({
     padding: Theme.spacing.lg,
     backgroundColor: Colors.white,
     borderTopWidth: 1,
-    borderTopColor: Colors.gray + '10',
+    borderTopColor: Colors.textMuted + '10',
     shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.05,
@@ -1610,11 +1610,11 @@ const styles = StyleSheet.create({
   employerStatValue: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.primary,
+    color: Colors.text,
   },
   employerStatLabel: {
     fontSize: 11,
-    color: Colors.gray,
+    color: Colors.textMuted,
     marginTop: 2,
   },
   employerActions: {
@@ -1640,11 +1640,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: Colors.gray + '05',
+    backgroundColor: Colors.textMuted + '05',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  
+
   // Modal Styles
   modalOverlay: {
     flex: 1,
@@ -1674,7 +1674,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.white,
+    color: Colors.text,
   },
   modalBody: {
     padding: Theme.spacing.lg,
@@ -1682,7 +1682,7 @@ const styles = StyleSheet.create({
   modalSubtitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.primary,
+    color: Colors.text,
     marginBottom: Theme.spacing.sm,
   },
   textAreaContainer: {
@@ -1690,11 +1690,11 @@ const styles = StyleSheet.create({
   },
   textArea: {
     borderWidth: 1,
-    borderColor: Colors.gray + '20',
+    borderColor: Colors.textMuted + '20',
     borderRadius: Theme.borderRadius.medium,
     padding: Theme.spacing.md,
     fontSize: 15,
-    color: Colors.primary,
+    color: Colors.text,
     minHeight: 120,
     textAlignVertical: 'top',
   },
@@ -1731,13 +1731,13 @@ const styles = StyleSheet.create({
   },
   modalTipText: {
     fontSize: 13,
-    color: Colors.gray,
+    color: Colors.textMuted,
   },
   modalFooter: {
     flexDirection: 'row',
     padding: Theme.spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: Colors.gray + '10',
+    borderTopColor: Colors.textMuted + '10',
     gap: 12,
   },
   modalCancelButton: {
@@ -1746,11 +1746,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: Theme.borderRadius.medium,
     borderWidth: 1,
-    borderColor: Colors.gray + '30',
+    borderColor: Colors.textMuted + '30',
   },
   modalCancelText: {
     fontSize: 15,
-    color: Colors.gray,
+    color: Colors.textMuted,
     fontWeight: '600',
   },
   modalSubmitButton: {
@@ -1772,9 +1772,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
-// Добавляем недостающие цвета
-Colors.lightAccent = Colors.accent + '10';
-Colors.success = '#34C759';
-Colors.warning = '#FF9500';
-Colors.error = '#FF3B30';

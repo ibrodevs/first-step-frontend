@@ -1,5 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+import { WelcomeScreen } from '../screens/WelcomeScreen';
 import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
 import { Colors } from '../constants/colors';
@@ -9,7 +10,9 @@ const Stack = createStackNavigator();
 export const AuthNavigator: React.FC = () => {
   return (
     <Stack.Navigator
+      initialRouteName="Welcome"
       screenOptions={{
+        headerShown: false,
         headerStyle: {
           backgroundColor: Colors.primary,
         },
@@ -20,11 +23,14 @@ export const AuthNavigator: React.FC = () => {
       }}
     >
       <Stack.Screen
+        name="Welcome"
+        component={WelcomeScreen}
+      />
+      <Stack.Screen
         name="Login"
         component={LoginScreen}
         options={{
           title: 'Вход',
-          headerShown: false,
         }}
       />
       <Stack.Screen
@@ -32,7 +38,6 @@ export const AuthNavigator: React.FC = () => {
         component={RegisterScreen}
         options={{
           title: 'Регистрация',
-          headerShown: false,
         }}
       />
     </Stack.Navigator>

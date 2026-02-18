@@ -28,12 +28,12 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
   const [role, setRole] = useState<'student' | 'employer'>('student');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   // Состояния фокуса
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [confirmFocused, setConfirmFocused] = useState(false);
-  
+
   const { register, isLoading } = useAuthStore();
 
   // Анимации
@@ -137,10 +137,10 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
           onPress={() => setRole('student')}
           activeOpacity={0.7}
         >
-          <Icon 
-            name="user" 
-            size={20} 
-            color={role === 'student' ? Colors.white : Colors.accent} 
+          <Icon
+            name="user"
+            size={20}
+            color={role === 'student' ? Colors.white : Colors.accent}
             style={styles.roleIcon}
           />
           <Text
@@ -157,7 +157,7 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
             </View>
           )}
         </TouchableOpacity>
-        
+
         <TouchableOpacity
           style={[
             styles.roleButton,
@@ -166,10 +166,10 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
           onPress={() => setRole('employer')}
           activeOpacity={0.7}
         >
-          <Icon 
-            name="briefcase" 
-            size={20} 
-            color={role === 'employer' ? Colors.white : Colors.accent} 
+          <Icon
+            name="briefcase"
+            size={20}
+            color={role === 'employer' ? Colors.white : Colors.accent}
             style={styles.roleIcon}
           />
           <Text
@@ -188,7 +188,7 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
         </TouchableOpacity>
       </View>
       <Text style={styles.roleHint}>
-        {role === 'student' 
+        {role === 'student'
           ? '📚 Доступ к стажировкам и программам'
           : '💼 Публикация вакансий и поиск талантов'
         }
@@ -233,13 +233,13 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         bounces={false}
       >
-        <Animated.View 
+        <Animated.View
           style={[
             styles.content,
             {
@@ -250,7 +250,15 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
         >
           {/* Декоративный элемент */}
           <View style={styles.decorativeTop} />
-          
+
+          {/* Кнопка назад */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Icon name="arrow-left" size={24} color={Colors.primary} />
+          </TouchableOpacity>
+
           {/* Заголовок */}
           <View style={styles.header}>
             <View style={styles.logoContainer}>
@@ -275,10 +283,10 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
                 styles.inputContainer,
                 emailFocused && styles.inputContainerFocused
               ]}>
-                <Icon 
-                  name="mail" 
-                  size={20} 
-                  color={emailFocused ? Colors.accent : Colors.gray} 
+                <Icon
+                  name="mail"
+                  size={20}
+                  color={emailFocused ? Colors.accent : Colors.gray}
                   style={styles.inputIcon}
                 />
                 <TextInput
@@ -306,10 +314,10 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
                 styles.inputContainer,
                 passwordFocused && styles.inputContainerFocused
               ]}>
-                <Icon 
-                  name="lock" 
-                  size={20} 
-                  color={passwordFocused ? Colors.accent : Colors.gray} 
+                <Icon
+                  name="lock"
+                  size={20}
+                  color={passwordFocused ? Colors.accent : Colors.gray}
                   style={styles.inputIcon}
                 />
                 <TextInput
@@ -328,9 +336,9 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
                   onPress={() => setShowPassword(!showPassword)}
                   style={styles.eyeIcon}
                 >
-                  <Icon 
-                    name={showPassword ? "eye-off" : "eye"} 
-                    size={20} 
+                  <Icon
+                    name={showPassword ? "eye-off" : "eye"}
+                    size={20}
                     color={Colors.gray}
                   />
                 </TouchableOpacity>
@@ -348,10 +356,10 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
                 confirmFocused && styles.inputContainerFocused,
                 confirmPassword && password !== confirmPassword && styles.inputContainerError
               ]}>
-                <Icon 
-                  name="shield" 
-                  size={20} 
-                  color={confirmFocused ? Colors.accent : Colors.gray} 
+                <Icon
+                  name="shield"
+                  size={20}
+                  color={confirmFocused ? Colors.accent : Colors.gray}
                   style={styles.inputIcon}
                 />
                 <TextInput
@@ -370,9 +378,9 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                   style={styles.eyeIcon}
                 >
-                  <Icon 
-                    name={showConfirmPassword ? "eye-off" : "eye"} 
-                    size={20} 
+                  <Icon
+                    name={showConfirmPassword ? "eye-off" : "eye"}
+                    size={20}
                     color={Colors.gray}
                   />
                 </TouchableOpacity>
@@ -390,8 +398,8 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
               <TouchableOpacity
                 style={[
                   styles.button,
-                  (!email || !password || !confirmPassword || password !== confirmPassword || password.length < 6) 
-                    && styles.buttonDisabled,
+                  (!email || !password || !confirmPassword || password !== confirmPassword || password.length < 6)
+                  && styles.buttonDisabled,
                   isLoading && styles.buttonLoading
                 ]}
                 onPress={handleRegister}
@@ -468,6 +476,13 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: Theme.spacing.xl * 2,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 10,
+    padding: Theme.spacing.sm,
   },
   logoContainer: {
     marginBottom: Theme.spacing.lg,
