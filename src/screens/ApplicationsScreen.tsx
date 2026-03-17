@@ -30,7 +30,7 @@ interface StatusConfig {
     label: string;
     icon: keyof typeof Feather.glyphMap;
     color: string;
-    gradient: string[];
+    gradient: readonly [string, string, ...string[]];
 }
 
 // Конфигурация статусов
@@ -39,25 +39,25 @@ const STATUS_CONFIG: Record<ApplicationStatus, StatusConfig> = {
         label: 'Отправлено',
         icon: 'send',
         color: Colors.primary,
-        gradient: [Colors.primary + '20', Colors.primary + '05'],
+        gradient: [Colors.primary + '20', Colors.primary + '05'] as const,
     },
     viewed: {
         label: 'Просмотрено',
         icon: 'eye',
         color: Colors.warning,
-        gradient: [Colors.warning + '20', Colors.warning + '05'],
+        gradient: [Colors.warning + '20', Colors.warning + '05'] as const,
     },
     accepted: {
         label: 'Принято',
         icon: 'check-circle',
         color: Colors.success,
-        gradient: [Colors.success + '20', Colors.success + '05'],
+        gradient: [Colors.success + '20', Colors.success + '05'] as const,
     },
     rejected: {
         label: 'Отклонено',
         icon: 'x-circle',
         color: Colors.error,
-        gradient: [Colors.error + '20', Colors.error + '05'],
+        gradient: [Colors.error + '20', Colors.error + '05'] as const,
     },
 };
 
@@ -246,7 +246,7 @@ const StatsBar: React.FC<{ applications: Application[] }> = ({ applications }) =
 };
 
 export const ApplicationsScreen: React.FC = () => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const [applications, setApplications] = useState<Application[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);

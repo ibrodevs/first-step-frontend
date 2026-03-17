@@ -1,26 +1,39 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ScrollView,
   Animated,
   Easing,
   Dimensions,
   StatusBar,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/authStore';
 import { Colors, Theme } from '../constants/colors';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { profileService, ApiProfile } from '../services/profileService';
+import { useFocusEffect } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
 export const ProfileScreen: React.FC = ({ navigation }: any) => {
   const { user, logout, isLoading } = useAuthStore();
+  const [profile, setProfile] = useState<ApiProfile | null>(null);
+
+  const loadProfile = useCallback(async () => {
+    if (!user) return;
+    try {
+      const me = await profileService.getMe();
+      setProfile(me);
+    } catch (e) {
+      // ignore
+    }
+  }, [user]);
 
   // Анимации
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -44,17 +57,25 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
         useNativeDriver: true,
         tension: 120,
         friction: 8,
-        mass: 1,
       }),
       Animated.spring(scaleAnim, {
         toValue: 1,
         friction: 6,
         tension: 80,
         useNativeDriver: true,
-        mass: 0.8,
       }),
     ]).start();
   }, []);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [loadProfile])
+  );
 
   // Интерполяция для плавных анимаций header'а
   const headerTranslateY = scrollY.interpolate({
@@ -81,34 +102,20 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
     extrapolate: 'clamp',
   });
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Выход из системы',
-      'Вы уверены, что хотите выйти?',
-      [
-        {
-          text: 'Отмена',
-          style: 'cancel',
-        },
-        {
-          text: 'Выйти',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await logout();
-            } catch (error) {
-              Alert.alert('Ошибка', 'Не удалось выйти из системы');
-            }
-          },
-        },
-      ]
-    );
+  const handleLogout = async () => {
+    await logout();
   };
 
   const getInitials = (email: string) => {
     const name = email.split('@')[0];
     return name.substring(0, 2).toUpperCase();
   };
+
+  const displayName = (() => {
+    const fromProfile = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
+    if (fromProfile) return fromProfile;
+    return user?.name || (user?.email ? user.email.split('@')[0] : '');
+  })();
 
   const handleScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -268,9 +275,13 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
               colors={[Colors.white, Colors.lightAccent]}
               style={styles.avatarGradient}
             >
-              <Text style={styles.avatarText}>
-                {user?.email ? getInitials(user.email) : 'U'}
-              </Text>
+              {profile?.avatar_url ? (
+                <Image source={{ uri: profile.avatar_url }} style={styles.avatarImage} />
+              ) : (
+                <Text style={styles.avatarText}>
+                  {user?.email ? getInitials(user.email) : 'U'}
+                </Text>
+              )}
             </LinearGradient>
             <TouchableOpacity style={styles.editAvatarButton}>
               <Feather name="camera" size={16} color={Colors.white} />
@@ -279,7 +290,7 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
 
           <View style={styles.userInfo}>
             <Text style={styles.userName}>
-              {user?.name || user?.email.split('@')[0]}
+              {displayName}
             </Text>
             <Text style={styles.userEmail}>{user?.email}</Text>
 
@@ -355,7 +366,7 @@ export const ProfileScreen: React.FC = ({ navigation }: any) => {
                     >
                       <View style={styles.menuItemLeft}>
                         <View style={[styles.menuIconContainer, { backgroundColor: item.color + '15' }]}>
-                          <Feather name={item.icon} size={20} color={item.color} />
+                          <Feather name={item.icon as any} size={20} color={item.color} />
                         </View>
                         <Text style={styles.menuTitle}>{item.title}</Text>
                       </View>
@@ -467,11 +478,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 3,
     borderColor: Colors.white,
+    overflow: 'hidden',
     shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 8,
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   avatarText: {
     fontSize: 36,

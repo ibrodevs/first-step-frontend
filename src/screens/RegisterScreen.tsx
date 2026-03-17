@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -14,14 +13,16 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/authStore';
 import { Colors, Theme } from '../constants/colors';
-import Icon from 'react-native-vector-icons/Feather';
+import { Feather as Icon } from '@expo/vector-icons';
+import { API_BASE_URL_VALUE } from '../services/api';
 
 const { width } = Dimensions.get('window');
 
 export const RegisterScreen: React.FC = ({ navigation }: any) => {
+  const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -35,6 +36,11 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
   const [confirmFocused, setConfirmFocused] = useState(false);
 
   const { register, isLoading } = useAuthStore();
+
+  const [toast, setToast] = useState<null | { type: 'success' | 'error'; message: string }>(null);
+  const toastOpacity = useRef(new Animated.Value(0)).current;
+  const toastTranslateY = useRef(new Animated.Value(-16)).current;
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Анимации
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -65,26 +71,124 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
     ]).start();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
+
+  const hideToast = () => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
+
+    Animated.parallel([
+      Animated.timing(toastOpacity, {
+        toValue: 0,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+      Animated.timing(toastTranslateY, {
+        toValue: -16,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setToast(null));
+  };
+
+  const showToast = (type: 'success' | 'error', message: string) => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
+
+    setToast({ type, message });
+    toastOpacity.setValue(0);
+    toastTranslateY.setValue(-16);
+
+    Animated.parallel([
+      Animated.timing(toastOpacity, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.timing(toastTranslateY, {
+        toValue: 0,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    toastTimerRef.current = setTimeout(() => {
+      hideToast();
+    }, 3000);
+  };
+
+  const translateRegisterError = (raw: string): string => {
+    const s = (raw || '').trim();
+    if (!s) return '';
+    const map: Record<string, string> = {
+      'Email already exists': 'Этот email уже зарегистрирован',
+      'Passwords do not match.': 'Пароли не совпадают',
+      'Password must be at least 8 characters.': 'Пароль должен содержать минимум 8 символов',
+      'Password must contain letters and digits.': 'Пароль должен содержать буквы и цифры',
+      'This field is required.': 'Это поле обязательно',
+    };
+    return map[s] ?? s;
+  };
+
+  const extractRegisterErrorMessage = (error: any): string => {
+    const data = error?.response?.data;
+    if (!data) return '';
+
+    // DRF APIException обычно: { detail: "..." }
+    if (typeof data.detail === 'string') {
+      return translateRegisterError(data.detail);
+    }
+
+    // DRF validation обычно: { field: ["msg1", "msg2"] }
+    if (typeof data === 'object') {
+      for (const key of Object.keys(data)) {
+        const value = (data as any)[key];
+        if (typeof value === 'string') return translateRegisterError(value);
+        if (Array.isArray(value) && typeof value[0] === 'string') return translateRegisterError(value[0]);
+      }
+    }
+
+    // На всякий случай поддержим старый формат
+    const legacy = data?.error?.message;
+    if (typeof legacy === 'string') return translateRegisterError(legacy);
+
+    return '';
+  };
+
   const handleRegister = async () => {
     // Валидация
     if (!email || !password || !confirmPassword) {
-      Alert.alert('Ошибка', 'Заполните все поля');
+      showToast('error', 'Заполните все поля');
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Ошибка', 'Пароли не совпадают');
+      showToast('error', 'Пароли не совпадают');
       return;
     }
 
-    if (password.length < 6) {
-      Alert.alert('Ошибка', 'Пароль должен содержать минимум 6 символов');
+    if (password.length < 8) {
+      showToast('error', 'Пароль должен содержать минимум 8 символов');
+      return;
+    }
+
+    const strongRegex = /^(?=.*[A-Za-z])(?=.*\d).+$/;
+    if (!strongRegex.test(password)) {
+      showToast('error', 'Пароль должен содержать буквы и цифры');
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert('Ошибка', 'Введите корректный email адрес');
+      showToast('error', 'Введите корректный email адрес');
       return;
     }
 
@@ -104,16 +208,17 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
 
     try {
       await register(email, password, role);
-      Alert.alert(
-        'Успешно!',
-        'Регистрация прошла успешно. Теперь вы можете войти в систему.',
-        [{ text: 'Войти', onPress: () => navigation.navigate('Login') }]
-      );
+
+      showToast('success', 'Аккаунт успешно создан');
     } catch (error: any) {
-      Alert.alert(
-        'Ошибка регистрации',
-        error.response?.data?.message || 'Произошла ошибка при регистрации'
-      );
+      const apiMessage = extractRegisterErrorMessage(error);
+      const message = !error.response
+        ? `Что-то не получилось. Не удалось подключиться к серверу (${API_BASE_URL_VALUE}).`
+        : apiMessage
+          ? `Что-то не получилось: ${apiMessage}`
+          : 'Что-то не получилось. Попробуйте ещё раз.';
+
+      showToast('error', message);
     }
   };
 
@@ -233,6 +338,29 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {toast && (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.toast,
+            toast.type === 'success' ? styles.toastSuccess : styles.toastError,
+            {
+              top: (Platform.OS === 'web' ? Theme.spacing.lg : insets.top + Theme.spacing.sm),
+              opacity: toastOpacity,
+              transform: [{ translateY: toastTranslateY }],
+            },
+          ]}
+        >
+          <Icon
+            name={toast.type === 'success' ? 'check-circle' : 'alert-circle'}
+            size={18}
+            color={Colors.white}
+            style={styles.toastIcon}
+          />
+          <Text style={styles.toastText}>{toast.message}</Text>
+        </Animated.View>
+      )}
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -324,7 +452,7 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
                   style={styles.input}
                   value={password}
                   onChangeText={setPassword}
-                  placeholder="Минимум 6 символов"
+                  placeholder="Минимум 8 символов"
                   placeholderTextColor={Colors.gray + '80'}
                   secureTextEntry={!showPassword}
                   autoCapitalize="none"
@@ -398,12 +526,12 @@ export const RegisterScreen: React.FC = ({ navigation }: any) => {
               <TouchableOpacity
                 style={[
                   styles.button,
-                  (!email || !password || !confirmPassword || password !== confirmPassword || password.length < 6)
+                  (!email || !password || !confirmPassword || password !== confirmPassword || password.length < 8)
                   && styles.buttonDisabled,
                   isLoading && styles.buttonLoading
                 ]}
                 onPress={handleRegister}
-                disabled={isLoading || !email || !password || !confirmPassword || password !== confirmPassword || password.length < 6}
+                disabled={isLoading || !email || !password || !confirmPassword || password !== confirmPassword || password.length < 8}
                 activeOpacity={0.8}
               >
                 {isLoading ? (
@@ -455,6 +583,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+    position: 'relative',
+  },
+  toast: {
+    position: 'absolute',
+    left: Theme.spacing.xl,
+    right: Theme.spacing.xl,
+    zIndex: 9999,
+    elevation: 9999,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Theme.spacing.md,
+    paddingHorizontal: Theme.spacing.lg,
+    borderRadius: Theme.borderRadius.medium,
+    shadowColor: Colors.gray,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+  },
+  toastSuccess: {
+    backgroundColor: Colors.success,
+  },
+  toastError: {
+    backgroundColor: Colors.error,
+  },
+  toastIcon: {
+    marginRight: Theme.spacing.sm,
+  },
+  toastText: {
+    flex: 1,
+    color: Colors.white,
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: 18,
   },
   scrollContent: {
     flexGrow: 1,
@@ -728,8 +889,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
-// Добавьте недостающие цвета
-Colors.error = '#FF3B30';
-Colors.success = '#34C759';
-Colors.warning = '#FF9500';

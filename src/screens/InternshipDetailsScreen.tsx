@@ -120,7 +120,7 @@ const ApplyModal: React.FC<{
 
               <View style={styles.modalTips}>
                 <View style={styles.modalTipsHeader}>
-                  <Feather name="lightbulb" size={16} color={Colors.accent} />
+                  <Feather name="info" size={16} color={Colors.accent} />
                   <Text style={styles.modalTipsTitle}>Советы для отличного отклика:</Text>
                 </View>
                 {[
@@ -1245,7 +1245,6 @@ const styles = StyleSheet.create({
   },
   modalBlur: {
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    backdropFilter: 'blur(20px)',
     padding: 20,
   },
   modalHeader: {

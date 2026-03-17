@@ -14,7 +14,7 @@ export const Colors = {
   lightGray: '#F5F5F5',
   danger: '#FF5252',
   warning: '#FFA726',
-  success: '#25D1E4',
+  success: '#35e500',
   info: '#25D1E4',
   error: '#FF5252',
 

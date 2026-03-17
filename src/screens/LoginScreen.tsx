@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -14,21 +13,40 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/authStore';
 import { Colors, Theme } from '../constants/colors';
 import { Feather } from '@expo/vector-icons';
+import { API_BASE_URL_VALUE } from '../services/api';
 
 const { width } = Dimensions.get('window');
 
 export const LoginScreen: React.FC = ({ navigation }: any) => {
+  const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
 
+  const [toast, setToast] = useState<null | { type: 'error' | 'success'; message: string }>(null);
+  const toastOpacity = useRef(new Animated.Value(0)).current;
+  const toastTranslateY = useRef(new Animated.Value(-16)).current;
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const { login, isLoading } = useAuthStore();
+
+  const translateLoginError = (raw: string): string => {
+    const s = (raw || '').trim();
+    if (!s) return '';
+    const map: Record<string, string> = {
+      'Invalid credentials': 'Неверный email или пароль',
+      'Invalid email or password': 'Неверный email или пароль',
+      'User is inactive': 'Аккаунт неактивен',
+      'Authentication credentials were not provided.': 'Нужно войти в аккаунт',
+    };
+    return map[s] ?? s;
+  };
 
   // Анимации
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -59,9 +77,63 @@ export const LoginScreen: React.FC = ({ navigation }: any) => {
     ]).start();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
+
+  const hideToast = () => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
+
+    Animated.parallel([
+      Animated.timing(toastOpacity, {
+        toValue: 0,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+      Animated.timing(toastTranslateY, {
+        toValue: -16,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setToast(null));
+  };
+
+  const showToast = (type: 'error' | 'success', message: string) => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
+
+    setToast({ type, message });
+    toastOpacity.setValue(0);
+    toastTranslateY.setValue(-16);
+
+    Animated.parallel([
+      Animated.timing(toastOpacity, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.timing(toastTranslateY, {
+        toValue: 0,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    toastTimerRef.current = setTimeout(() => {
+      hideToast();
+    }, 3000);
+  };
+
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Ошибка', 'Заполните все поля');
+      showToast('error', 'Заполните все поля');
       return;
     }
 
@@ -82,16 +154,12 @@ export const LoginScreen: React.FC = ({ navigation }: any) => {
     try {
       await login(email, password);
     } catch (error: any) {
-      Alert.alert(
-        'Ошибка входа',
-        error.response?.data?.message || 'Неверный email или пароль',
-        [
-          {
-            text: 'Попробовать снова',
-            style: 'cancel'
-          }
-        ]
-      );
+      const apiMessage = translateLoginError(error.response?.data?.error?.message);
+      const message = !error.response
+        ? `Не удалось подключиться к серверу (${API_BASE_URL_VALUE}). Убедитесь, что backend запущен и доступен из сети.`
+        : apiMessage || 'Неверный email или пароль';
+
+      showToast('error', message);
     }
   };
 
@@ -105,6 +173,29 @@ export const LoginScreen: React.FC = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {toast && (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.toast,
+            toast.type === 'success' ? styles.toastSuccess : styles.toastError,
+            {
+              top: (Platform.OS === 'web' ? Theme.spacing.lg : insets.top + Theme.spacing.sm),
+              opacity: toastOpacity,
+              transform: [{ translateY: toastTranslateY }],
+            },
+          ]}
+        >
+          <Feather
+            name={toast.type === 'success' ? 'check-circle' : 'alert-circle'}
+            size={18}
+            color={Colors.white}
+            style={styles.toastIcon}
+          />
+          <Text style={styles.toastText}>{toast.message}</Text>
+        </Animated.View>
+      )}
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -285,6 +376,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+    position: 'relative',
+  },
+  toast: {
+    position: 'absolute',
+    left: Theme.spacing.xl,
+    right: Theme.spacing.xl,
+    zIndex: 9999,
+    elevation: 9999,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Theme.spacing.md,
+    paddingHorizontal: Theme.spacing.lg,
+    borderRadius: Theme.borderRadius.medium,
+    shadowColor: Colors.gray,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+  },
+  toastSuccess: {
+    backgroundColor: Colors.success,
+  },
+  toastError: {
+    backgroundColor: Colors.error,
+  },
+  toastIcon: {
+    marginRight: Theme.spacing.sm,
+  },
+  toastText: {
+    flex: 1,
+    color: Colors.white,
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: 18,
   },
   scrollContent: {
     flexGrow: 1,

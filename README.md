@@ -101,20 +101,39 @@ npm run web
 
 ## 🔧 Настройка Backend API
 
-1. Обновите URL API в файле `src/services/api.ts`:
-```typescript
-const API_BASE_URL = 'http://your-backend-ip:8000/api/v1';
+API base URL задается через env-переменную Expo: `EXPO_PUBLIC_API_URL`.
+
+Начиная с текущей версии, если `EXPO_PUBLIC_API_URL` не задана, приложение в Expo Go/dev обычно пытается автоматически определить IP вашего компьютера по `hostUri` Expo и использовать:
+
+`http://<IP_вашего_компьютера>:8000/api/v1`
+
+Это решает типичную проблему iOS/Android физического устройства, когда `localhost` указывает на телефон, а не на ваш компьютер.
+
+Примеры:
+
+1) Для физического устройства (IP вашего компьютера в локальной сети):
+```bash
+export EXPO_PUBLIC_API_URL="http://192.168.1.100:8000/api/v1"
+npm start
 ```
 
-2. Для Android эмулятора используйте:
-```typescript
-const API_BASE_URL = 'http://10.0.2.2:8000/api/v1';
+2) Для Android эмулятора:
+```bash
+export EXPO_PUBLIC_API_URL="http://10.0.2.2:8000/api/v1"
+npm run android
 ```
 
-3. Для физических устройств используйте IP адрес компьютера:
-```typescript
-const API_BASE_URL = 'http://192.168.1.100:8000/api/v1';
+3) Для iOS Simulator / Web обычно работает localhost:
+```bash
+export EXPO_PUBLIC_API_URL="http://127.0.0.1:8000/api/v1"
+npm run ios
 ```
+
+Если переменная не задана, по умолчанию используется `http://localhost:8000/api/v1`.
+
+Важно для физического устройства (iPhone/Android):
+- Телефон и компьютер должны быть в одной Wi‑Fi сети
+- Backend должен слушать внешние интерфейсы: `python3 manage.py runserver 0.0.0.0:8000`
 
 ## 🔐 Аутентификация
 
@@ -131,7 +150,11 @@ const API_BASE_URL = 'http://192.168.1.100:8000/api/v1';
 - `POST /auth/register/` - Регистрация
 - `POST /auth/logout/` - Выход из системы
 - `POST /auth/token/refresh/` - Обновление токена
-- `GET /auth/user/` - Получение текущего пользователя
+
+### Профиль
+- `GET /profile/me/` - Получить текущий профиль
+- `PATCH /profile/me/` - Обновить профиль
+- `POST /profile/change-password/` - Сменить пароль
 
 ### Стажировки
 - `GET /internships/` - Список стажировок (с фильтрами)

@@ -31,6 +31,15 @@ type ViewMode = 'grid' | 'list';
 type SortOption = 'date' | 'popularity' | 'salary' | 'deadline';
 type FilterPreset = 'all' | 'paid' | 'online' | 'today' | 'week';
 
+type FilterState = {
+  search: string;
+  city: string | null;
+  format: 'online' | 'offline' | 'hybrid' | null;
+  isPaid: boolean | null;
+  sortBy: SortOption;
+  viewMode: ViewMode;
+};
+
 interface InternshipCardProps {
   internship: Internship;
   onPress: () => void;
@@ -408,6 +417,9 @@ export const HomeScreen: React.FC = ({ navigation }: any) => {
     switch (filterState.sortBy) {
       case 'date':
         filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+      case 'popularity':
+        filtered.sort((a, b) => (b.applicationsCount || 0) - (a.applicationsCount || 0));
         break;
       case 'deadline':
         filtered.sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());

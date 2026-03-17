@@ -1,65 +1,68 @@
 import { api } from './api';
-import { mockApi } from './mockApi';
 import { secureStorage } from '../utils/storage';
 import { AuthTokens, LoginCredentials, RegisterData, User } from '../types';
 
-// Флаг для переключения между real API и mock API
-const USE_MOCK_API = true;
+type LoginResponse = {
+  access: string;
+  refresh: string;
+  token_type: 'Bearer';
+  expires_in: number;
+  user: { id: string; email: string };
+};
+
+type RegisterResponse = {
+  id: string;
+  email: string;
+  created_at: string;
+};
+
+async function getStoredRole(): Promise<User['role']> {
+  const role = await secureStorage.getItemAsync('userRole');
+  return (role === 'employer' ? 'employer' : 'student') as User['role'];
+}
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> {
-    let response;
-    
-    if (USE_MOCK_API) {
-      const data = await mockApi.login(credentials.email, credentials.password);
-      response = { data };
-    } else {
-      response = await api.post('/auth/login/', credentials);
-    }
-    
+    const response = await api.post<LoginResponse>('/auth/login/', credentials);
     const { user, access, refresh } = response.data;
+    const role = await getStoredRole();
     
     // Сохраняем токены
     await secureStorage.setItemAsync('accessToken', access);
     await secureStorage.setItemAsync('refreshToken', refresh);
     
     return {
-      user,
+      user: {
+        id: user.id,
+        email: user.email,
+        role,
+      },
       tokens: { access, refresh },
     };
   },
 
-  async register(data: RegisterData): Promise<{ user: User; tokens: AuthTokens }> {
-    let response;
-    
-    if (USE_MOCK_API) {
-      const mockData = await mockApi.register(data.email, data.password, data.role);
-      response = { data: mockData };
-    } else {
-      response = await api.post('/auth/register/', data);
-    }
-    
-    const { user, access, refresh } = response.data;
-    
-    // Сохраняем токены
-    await secureStorage.setItemAsync('accessToken', access);
-    await secureStorage.setItemAsync('refreshToken', refresh);
-    
+  async register(data: RegisterData): Promise<{ user: Pick<User, 'id' | 'email' | 'role'> }> {
+    await secureStorage.setItemAsync('userRole', data.role);
+    const response = await api.post<RegisterResponse>('/auth/register/', {
+      email: data.email,
+      password: data.password,
+      password_confirm: data.password,
+    });
+
     return {
-      user,
-      tokens: { access, refresh },
+      user: {
+        id: response.data.id,
+        email: response.data.email,
+        role: data.role,
+      },
     };
   },
 
   async logout(): Promise<void> {
     try {
-      if (USE_MOCK_API) {
-        await mockApi.logout();
-      } else {
-        const refreshToken = await secureStorage.getItemAsync('refreshToken');
-        if (refreshToken) {
-          await api.post('/auth/logout/', { refresh: refreshToken });
-        }
+      const refreshToken = await secureStorage.getItemAsync('refreshToken');
+      if (refreshToken) {
+        await api.post('/auth/logout/', { refresh: refreshToken });
       }
     } catch (error) {
       console.error('Logout error:', error);
@@ -71,12 +74,13 @@ export const authService = {
   },
 
   async getCurrentUser(): Promise<User> {
-    if (USE_MOCK_API) {
-      return await mockApi.getCurrentUser();
-    } else {
-      const response = await api.get('/auth/user/');
-      return response.data;
-    }
+    const role = await getStoredRole();
+    const response = await api.get<{ id: string; email: string; created_at?: string; updated_at?: string }>('/profile/me/');
+    return {
+      id: response.data.id,
+      email: response.data.email,
+      role,
+    };
   },
 
   async isAuthenticated(): Promise<boolean> {

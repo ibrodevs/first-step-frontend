@@ -5,7 +5,7 @@ import { User, Internship, StudentProfile, EmployerProfile } from '../types';
 const mockUsers: Record<string, { user: User; password: string }> = {
   'student@test.com': {
     user: {
-      id: 1,
+      id: '1',
       email: 'student@test.com',
       role: 'student',
       isActive: true,
@@ -15,7 +15,7 @@ const mockUsers: Record<string, { user: User; password: string }> = {
   },
   'employer@test.com': {
     user: {
-      id: 2,
+      id: '2',
       email: 'employer@test.com',
       role: 'employer',
       isActive: true,
@@ -31,14 +31,19 @@ const mockInternships: Internship[] = [
     id: 1,
     title: 'Frontend Developer стажировка',
     description: 'Отличная возможность изучить React Native и TypeScript в команде опытных разработчиков. Мы предлагаем менторство, реальные проекты и возможность роста.',
+    responsibilities: 'Участие в разработке мобильного приложения, работа с компонентами и API.',
     requirements: 'Базовые знания JavaScript, HTML, CSS. Желание изучать React Native. Ответственность и коммуникабельность.',
     skills: ['React Native', 'TypeScript', 'JavaScript', 'Git'],
     format: 'hybrid',
     city: 'Бишкек',
     duration: '3 месяца',
+    positions: 2,
     isPaid: true,
+    experience: 'Без опыта',
     status: 'active',
     dateCreated: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    deadline: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString(),
     employer: {
       id: 1,
       user: mockUsers['employer@test.com'].user,
@@ -54,14 +59,19 @@ const mockInternships: Internship[] = [
     id: 2,
     title: 'Backend Developer стажировка',
     description: 'Изучай Python и Django на реальных проектах. Работай с базами данных, API и микросервисами.',
+    responsibilities: 'Разработка API, работа с базой данных и написание тестов.',
     requirements: 'Базовые знания программирования. Знание Python будет плюсом. Желание изучать веб-технологии.',
     skills: ['Python', 'Django', 'PostgreSQL', 'REST API'],
     format: 'offline',
     city: 'Бишкек',
     duration: '4 месяца',
+    positions: 1,
     isPaid: false,
+    experience: 'Без опыта',
     status: 'active',
     dateCreated: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    deadline: new Date(Date.now() + 1000 * 60 * 60 * 24 * 21).toISOString(),
     employer: {
       id: 2,
       user: mockUsers['employer@test.com'].user,
@@ -76,14 +86,19 @@ const mockInternships: Internship[] = [
     id: 3,
     title: 'UI/UX Designer стажировка',
     description: 'Создавай интерфейсы для мобильных приложений и веб-сайтов. Работай с Figma, изучай пользовательский опыт.',
+    responsibilities: 'Создание макетов, прототипирование и участие в исследовании UX.',
     requirements: 'Креативность, внимание к деталям. Базовые знания дизайна. Знание Figma будет плюсом.',
     skills: ['Figma', 'UI Design', 'UX Research', 'Prototyping'],
     format: 'online',
     city: 'Ош',
     duration: '2 месяца',
+    positions: 1,
     isPaid: true,
+    experience: 'Без опыта',
     status: 'active',
     dateCreated: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    deadline: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10).toISOString(),
     employer: {
       id: 3,
       user: mockUsers['employer@test.com'].user,
@@ -124,7 +139,7 @@ export const mockApi = {
     }
 
     const newUser: User = {
-      id: Date.now(),
+      id: String(Date.now()),
       email,
       role,
       isActive: true,
@@ -209,7 +224,7 @@ export const mockApi = {
       student: {} as StudentProfile,
       internship,
       coverLetter,
-      status: 'sent',
+      status: 'sent' as const,
       dateApplied: new Date().toISOString(),
     };
   },

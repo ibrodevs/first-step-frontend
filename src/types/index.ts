@@ -1,10 +1,10 @@
 export interface User {
-  id: number;
+  id: string;
   email: string;
   role: 'student' | 'employer';
-  isActive: boolean;
+  isActive?: boolean;
   name?: string;
-  dateJoined: string;
+  dateJoined?: string;
 }
 
 export interface StudentProfile {
@@ -26,6 +26,7 @@ export interface EmployerProfile {
   description: string;
   city: string;
   website?: string;
+  email?: string;
   contactInfo: string;
   isVerified: boolean;
 }
@@ -34,13 +35,16 @@ export interface Internship {
   id: number;
   title: string;
   description: string;
+  responsibilities?: string;
   requirements: string;
   skills: string[];
   format: 'online' | 'offline' | 'hybrid';
   city: string;
   duration: string;
+  positions?: number;
   isPaid: boolean;
   salary?: number;
+  experience?: string;
   status: 'active' | 'closed';
   dateCreated: string;
   createdAt: string; // Used in some screens
@@ -54,7 +58,7 @@ export interface Application {
   student: StudentProfile;
   internship: Internship;
   coverLetter: string;
-  status: 'sent' | 'accepted' | 'rejected';
+  status: 'sent' | 'viewed' | 'accepted' | 'rejected';
   dateApplied: string;
 }
 

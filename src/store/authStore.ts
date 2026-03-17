@@ -40,7 +40,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   register: async (email: string, password: string, role: 'student' | 'employer') => {
     set({ isLoading: true });
     try {
-      const { user } = await authService.register({ email, password, role });
+      await authService.register({ email, password, role });
+      const { user } = await authService.login({ email, password });
       set({ user, isAuthenticated: true, isLoading: false });
     } catch (error) {
       set({ isLoading: false });
@@ -80,6 +81,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           const user = await authService.getCurrentUser();
           set({ user, isAuthenticated: true, isLoading: false });
         } catch (error) {
+          await authService.logout();
           set({ isAuthenticated: false, isLoading: false });
         }
       } else {
