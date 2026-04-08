@@ -7,17 +7,32 @@ function normalizeBaseUrl(url: string): string {
   return url.replace(/\/+$/, '');
 }
 
+function getExpoExtraApiUrl(): string | null {
+  const anyConstants: any = Constants as any;
+  const apiUrl =
+    anyConstants?.expoConfig?.extra?.apiUrl ||
+    anyConstants?.manifest2?.extra?.apiUrl ||
+    anyConstants?.manifest?.extra?.apiUrl;
+
+  if (!apiUrl || typeof apiUrl !== 'string') return null;
+  const trimmed = apiUrl.trim();
+  return trimmed ? normalizeBaseUrl(trimmed) : null;
+}
+
 function inferExpoHost(): string | null {
   // Expo Go / dev client usually provides hostUri like "192.168.1.100:8081"
   const anyConstants: any = Constants as any;
   const hostUri: string | undefined =
     (Constants as any).expoConfig?.hostUri ||
+    anyConstants?.expoConfig?.extra?.expoClient?.hostUri ||
     anyConstants?.manifest2?.extra?.expoClient?.hostUri ||
     anyConstants?.manifest?.debuggerHost ||
-    anyConstants?.manifest?.hostUri;
+    anyConstants?.manifest?.hostUri ||
+    anyConstants?.experienceUrl;
 
   if (!hostUri || typeof hostUri !== 'string') return null;
-  const host = hostUri.split(':')[0]?.trim();
+  const sanitizedHostUri = hostUri.replace(/^https?:\/\//, '');
+  const host = sanitizedHostUri.split('/')[0]?.split(':')[0]?.trim();
   if (!host) return null;
   return host;
 }
@@ -31,14 +46,36 @@ function isLikelyLanHost(host: string): boolean {
   return false;
 }
 
+function replaceLocalhostWithExpoHost(url: string, expoHost: string | null): string {
+  if (!expoHost || Platform.OS === 'web') {
+    return normalizeBaseUrl(url);
+  }
+
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
+      parsed.hostname = expoHost;
+    }
+    return normalizeBaseUrl(parsed.toString());
+  } catch {
+    return normalizeBaseUrl(url);
+  }
+}
+
 function computeApiBaseUrl(): string {
+  const expoHost = inferExpoHost();
+
   // Expo env: EXPO_PUBLIC_API_URL, example: http://192.168.1.100:8000/api/v1
   const envUrl = process.env.EXPO_PUBLIC_API_URL;
   if (envUrl && typeof envUrl === 'string' && envUrl.trim()) {
-    return normalizeBaseUrl(envUrl.trim());
+    return replaceLocalhostWithExpoHost(envUrl.trim(), expoHost);
   }
 
-  const expoHost = inferExpoHost();
+  const extraApiUrl = getExpoExtraApiUrl();
+  if (extraApiUrl) {
+    return replaceLocalhostWithExpoHost(extraApiUrl, expoHost);
+  }
+
   if (expoHost && isLikelyLanHost(expoHost)) {
     return `http://${expoHost}:8000/api/v1`;
   }
@@ -47,7 +84,7 @@ function computeApiBaseUrl(): string {
   if (Platform.OS === 'android') {
     return 'http://10.0.2.2:8000/api/v1';
   }
-  return 'http://localhost:8000/api/v1';
+  return 'http://127.0.0.1:8000/api/v1';
 }
 
 const API_BASE_URL = computeApiBaseUrl();
